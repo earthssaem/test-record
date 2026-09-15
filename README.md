@@ -66,7 +66,7 @@ npm run build        # 타입 검사 + 프로덕션 빌드
 | `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis REST 토큰 |
 
 두 값이 모두 있어야 서버가 Redis 를 사용합니다. 없으면 `/api/health` 가 `{ ok: false }` 를 돌려주고 클라이언트는 자동으로 localStorage 저장소로 전환합니다.
-(Vercel Marketplace 에서 Upstash 를 연동하면 `KV_REST_API_URL` / `KV_REST_API_TOKEN` 이름으로 주입되는 경우도 있는데, 이 이름도 인식합니다.)
+Vercel Marketplace 에서 Upstash 를 연동하면 `<접두사>_REST_API_URL` / `<접두사>_REST_API_TOKEN` (예: `KV_REST_API_URL`, `STORAGE_REST_API_URL`) 이름으로 주입되는데, 이 형태도 접두사와 상관없이 인식합니다.
 
 빌드 시 `VITE_STORAGE=local` 을 주면 API 와 상관없이 항상 localStorage 만 사용합니다 (데모용).
 

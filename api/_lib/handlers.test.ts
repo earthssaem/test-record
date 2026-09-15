@@ -118,3 +118,19 @@ describe('API 핸들러', () => {
     expect(r.out.status).toBe(405);
   });
 });
+
+describe('redisEnv', () => {
+  it('Upstash 기본 이름과 Marketplace 접두사 이름을 모두 인식한다', async () => {
+    const { redisEnv } = await import('./store');
+    const saved = { ...process.env };
+    for (const k of Object.keys(process.env)) if (/_REST_API_(URL|TOKEN)$|^UPSTASH_REDIS_REST_/.test(k)) delete process.env[k];
+    expect(redisEnv()).toBeNull();
+    process.env.STORAGE_REST_API_URL = 'https://x.upstash.io';
+    process.env.STORAGE_REST_API_TOKEN = 't1';
+    expect(redisEnv()).toEqual({ url: 'https://x.upstash.io', token: 't1' });
+    process.env.UPSTASH_REDIS_REST_URL = 'https://y.upstash.io';
+    process.env.UPSTASH_REDIS_REST_TOKEN = 't2';
+    expect(redisEnv()).toEqual({ url: 'https://y.upstash.io', token: 't2' });
+    process.env = saved;
+  });
+});

@@ -14,9 +14,23 @@ export interface Store {
   deleteGame(id: string): Promise<boolean>;
 }
 
+/**
+ * Redis 접속 정보를 환경 변수에서 찾습니다.
+ * 1) UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN (Upstash 기본 이름)
+ * 2) Vercel Marketplace 연동이 만드는 `<접두사>_REST_API_URL` / `<접두사>_REST_API_TOKEN` (예: KV_, STORAGE_)
+ */
 export function redisEnv(): { url: string; token: string } | null {
-  const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
+  const env = process.env;
+  if (env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN) {
+    return { url: env.UPSTASH_REDIS_REST_URL, token: env.UPSTASH_REDIS_REST_TOKEN };
+  }
+  const urlKey = Object.keys(env)
+    .filter((k) => k.endsWith('_REST_API_URL') && env[k])
+    .sort()[0];
+  if (!urlKey) return null;
+  const tokenKey = urlKey.replace(/_REST_API_URL$/, '_REST_API_TOKEN');
+  const url = env[urlKey];
+  const token = env[tokenKey];
   if (!url || !token) return null;
   return { url, token };
 }
